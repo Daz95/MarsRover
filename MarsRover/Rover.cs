@@ -15,43 +15,47 @@ namespace MarsRover
             };
         }
 
-        public void Move(string function)
+        public void Move(string functions, Position endofPlatau)
         {
-            switch(function)
+            foreach(char function in functions)
             {
-                case "L":
-                    CurrentLocation.direction = CurrentLocation.direction.RotateLeft();
-                    break;
-                case "R":
-                    CurrentLocation.direction = CurrentLocation.direction.RotateRight();
-                    break;
-                case "M":
-                    CurrentLocation.position = CurrentLocation.direction.MoveForward(CurrentLocation.position);
-                    break;
-                default:
-                    throw new InvalidInputException("Invalid input! Please choose a correct function.");
+                switch (function)
+                {
+                    case 'L':
+                        CurrentLocation.direction = CurrentLocation.direction.RotateLeft();
+                        break;
+                    case 'R':
+                        CurrentLocation.direction = CurrentLocation.direction.RotateRight();
+                        break;
+                    case 'M':
+                        CurrentLocation.position = MoveForward(endofPlatau);
+                        break;
+                    default:
+                        throw new InvalidInputException("Invalid input! Please choose a correct function.");
+                }
             }
+        }
+
+        private Position MoveForward(Position endofPlatau)
+        {
+            Position newPos =  CurrentLocation.direction.MoveForward(CurrentLocation.position);
+            if (newPos.xPosition > endofPlatau.xPosition)
+                newPos.xPosition = endofPlatau.xPosition;
+            if (newPos.yPosition > endofPlatau.yPosition)
+                newPos.yPosition = endofPlatau.yPosition;
+            if (newPos.xPosition < 0)
+                newPos.xPosition = 0;
+            if (newPos.yPosition < 0)
+                newPos.yPosition = 0;
+
+            return newPos;
         }
         
         public Location GetLocation()
         {
             return CurrentLocation;
         }
-        
-        public static Position GetPosition(string xyPos)
-        {
-            string[] coordinates = xyPos.Split(" ");
-            string errorMessage = "Incorrect X and Y input!";
-
-            if (coordinates.Length != 2)
-                throw new InvalidInputException(errorMessage);
-
-            int x, y;
-            if(Int32.TryParse(coordinates[0], out x) && Int32.TryParse(coordinates[1], out y))
-                return new Position { xPosition = x, yPosition = y };
-
-            throw new InvalidInputException(errorMessage);
-        }     
+          
 
     }
 }
